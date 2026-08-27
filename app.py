@@ -30,7 +30,7 @@ st.set_page_config(
 # ----------------------------
 @st.cache_data
 def load_data():
-    full_data = pd.read_csv('full_data_with_features.csv', parse_dates=['Date'])
+    full_data = pd.read_csv('full_data_light.csv', parse_dates=['Date'])
     test_set = pd.read_csv('test_set_with_preds.csv', parse_dates=['Date'])
     return full_data, test_set
 
@@ -98,10 +98,21 @@ if page == "Overview":
 
     with col1:
         st.subheader("Average Sales by Store Type")
-        type_avg = full_data.groupby('Type')['Weekly_Sales'].mean().reset_index() if 'Type' in full_data.columns else None
-        if type_avg is not None:
+        # Type was one-hot encoded during feature engineering (StoreType_A/B/C),
+        # so reconstruct a single Type column from those dummy columns.
+        type_cols = [c for c in ['StoreType_A', 'StoreType_B', 'StoreType_C'] if c in full_data.columns]
+        if type_cols:
+            temp = full_data.copy()
+            temp['Type'] = temp[type_cols].idxmax(axis=1).str.replace('StoreType_', '', regex=False)
+            type_avg = temp.groupby('Type')['Weekly_Sales'].mean().reset_index()
             fig2 = px.bar(type_avg, x='Type', y='Weekly_Sales', color='Type')
             st.plotly_chart(fig2, use_container_width=True)
+        elif 'Type' in full_data.columns:
+            type_avg = full_data.groupby('Type')['Weekly_Sales'].mean().reset_index()
+            fig2 = px.bar(type_avg, x='Type', y='Weekly_Sales', color='Type')
+            st.plotly_chart(fig2, use_container_width=True)
+        else:
+            st.info("Store Type data not found in this file.")
 
     with col2:
         st.subheader("Average Sales by Month")
