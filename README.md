@@ -3,7 +3,7 @@
 A demand forecasting project that predicts weekly sales at the store/department
 level and translates forecast accuracy into estimated inventory cost savings.
 
-**[Live dashboard demo →](#)** *(add your Streamlit Cloud link here once deployed, or note "run locally, see instructions below")*
+**[Live dashboard demo →](https://bijaybhat18-walmart-demand-forecasting-app-etblaw.streamlit.app/")**
 
 ---
 
